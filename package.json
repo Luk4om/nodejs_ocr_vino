@@ -1,0 +1,10 @@
+{
+  "name": "ocr_vino",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "openvino-node": "^2025.4.0",
+    "sharp": "^0.34.5"
+  }
+}
