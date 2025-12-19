@@ -1,5 +1,10 @@
+.venv/
 node_modules/
 image/
-result_overlay.png
-basemodel/
+# Ignore basemodel contents but keep archives and models
+basemodel/*
+!basemodel/*.tar
+!basemodel/*.pt
+!basemodel/*.pth
+!basemodel/.gitkeep
 modelvino/

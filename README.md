@@ -77,3 +77,37 @@ node plot_result.js
 ## หมายเหตุ
 - โมเดลนี้รันบน **CPU** เป็นค่าเริ่มต้น หากต้องการใช้ GPU (Intel) สามารถแก้ไขโค้ดตรง `core.compileModel(model, 'GPU')`
 - ไฟล์โมเดลควรเป็นเวอร์ชันที่เข้ากันได้กับ `openvino-node`
+
+---
+
+## การแปลงโมเดล (Model Conversion Guide)
+
+โปรเจกต์นี้รองรับโมเดลจากหลายแหล่ง โดยมีวิธีการแปลงเป็น OpenVINO ดังนี้:
+
+### 1. PaddleOCR Detection (e.g., `en_PP-OCRv3_det_infer`)
+สำหรับการแปลงโมเดลจาก PaddlePaddle ให้ใช้คำสั่ง `paddle2onnx` หรือ `ovc` (OpenVINO Model Converter) โดยตรงถ้าไฟล์เป็น `.pdmodel`
+
+```bash
+uv run ovc basemodel/en_PP-OCRv3_det_infer/inference.pdmodel --output_model modelvino/model.xml
+```
+
+### 2. YOLO Object Detection (e.g., `yolo11n.pt`)
+สำหรับโมเดล YOLO (v8, v11) ที่เป็น `.pt` สามารถใช้สคริปต์ `convert.py` ที่เตรียมไว้ให้ ซึ่งจะเรียกใช้ `ultralytics` ในการแปลง:
+
+```bash
+# 1. ติดตั้ง Dependencies (ทำอัตโนมัติด้วย uv)
+# 2. แปลงไฟล์และย้ายไปที่ modelvino/
+uv run convert.py
+```
+> สคริปต์นี้จะสร้าง `model_yolo.xml` และ `model_yolo.bin`
+
+### 3. UniFormer-XXS Semantic Segmentation (e.g., `fpn_xxs_uniformer.pth`)
+เนื่องจากไฟล์ `.pth` ของ PyTorch มักเก็บเฉพาะค่า Weights (State Dict) การแปลงจำเป็นต้องมี **Source Code ต้นฉบับ** ของโมเดลนั้นๆ เพื่อโหลดโครงสร้างก่อน
+
+1. แก้ไขไฟล์ `convert_uniformer.py`
+2. นำเข้า Class โมเดล (เช่น `from uniformer import UniFormer`) และสร้างอินสแตนซ์
+3. รันสคริปต์เพื่อแปลงเป็น OpenVINO
+
+```bash
+uv run convert_uniformer.py
+```
